@@ -74,6 +74,8 @@ class Simple(resource.Resource):
             cec.volume_up()
         elif request.path == "/vol_down":
             cec.volume_down()
+        elif request.path == "/power_on":
+            cec.power_on()
         response_data = {}
         request.setResponseCode(200)
         request.responseHeaders.addRawHeader(b"content-type", b"application/json")

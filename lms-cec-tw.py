@@ -70,6 +70,8 @@ class LMSClientFactory(ReconnectingClientFactory):
 class Simple(resource.Resource):
     isLeaf = True
     def render_GET(self, request):
+        response_data = "OK"
+        request.setResponseCode(200)
         receiver = cec.Device(config['cec_output'])
         if request.path == "/vol_up":
             cec.volume_up()
@@ -79,12 +81,13 @@ class Simple(resource.Resource):
             receiver.power_on()
         elif request.path == "/power_off":
             receiver.standby()
-        elif request.path == "/input":
-            receiver.set_av_input()
-        response_data = {}
-        request.setResponseCode(200)
-        request.responseHeaders.addRawHeader(b"content-type", b"application/json")
-        return json.dumps(response_data)
+        elif request.prepath[0] == "input":
+            receiver.set_av_input(int(request.postpath[0]))
+        else:
+            response_data = "unknown command"
+            request.setResponseCode(404)
+        request.responseHeaders.addRawHeader(b"content-type", b"text/plain")
+        return response_data
 
 if __name__ == '__main__':
     log.startLogging(sys.stdout)

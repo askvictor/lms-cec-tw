@@ -70,12 +70,18 @@ class LMSClientFactory(ReconnectingClientFactory):
 class Simple(resource.Resource):
     isLeaf = True
     def render_GET(self, request):
+        receiv:w
+        er = cec.Device(config['cec_output'])
         if request.path == "/vol_up":
             cec.volume_up()
         elif request.path == "/vol_down":
             cec.volume_down()
         elif request.path == "/power_on":
-            cec.power_on()
+            receiver.power_on()
+        elif request.path == "/power_off":
+            receiver.standby()
+        elif request.path == "/input":
+            receiver.set_av_input()
         response_data = {}
         request.setResponseCode(200)
         request.responseHeaders.addRawHeader(b"content-type", b"application/json")
@@ -89,6 +95,9 @@ if __name__ == '__main__':
     root = resource.Resource()
     root.putChild("vol_up", Simple())
     root.putChild("vol_down", Simple())
+    root.putChild("power_on", Simple())
+    root.putChild("power_off", Simple())
+    root.putChild("", Simple())
     site = server.Site(root)
     reactor.listenTCP(8080, site)
     reactor.run()

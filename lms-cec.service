@@ -1,0 +1,14 @@
+***LMS CEC.service***
+[Unit]
+Description=Squeezebox-CEC (and CEC api) adapter
+After=multi-user.target
+
+[Service]
+Type=simple
+ExecStart=/home/pi/src/lms-cec-tw/lms-cec-tw.py
+User=pi
+WorkingDirectory=/home/pi/src/lms-cec-tw
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

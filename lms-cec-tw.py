@@ -96,7 +96,7 @@ if __name__ == '__main__':
     root.putChild("vol_down", Simple())
     root.putChild("power_on", Simple())
     root.putChild("power_off", Simple())
-    root.putChild("", Simple())
+    root.putChild("input", Simple())
     site = server.Site(root)
     reactor.listenTCP(8080, site)
     reactor.run()

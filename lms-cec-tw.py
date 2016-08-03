@@ -7,7 +7,7 @@ from twisted.internet.protocol import Protocol, ReconnectingClientFactory
 from twisted.web import server, resource
 from twisted.python import log
 from twisted.internet import reactor
-#import cec
+import cec
 
 from future.standard_library import install_aliases
 install_aliases()
@@ -27,8 +27,6 @@ config = {
 
 class LMSClient(Protocol):
     def connectionMade(self):
-        #cec.init()
-        #cec.list_devices()  # necessary for volume to work
 
         log.msg('connected; intialising CEC and subscribing to playlist and mixer')
         self.transport.write('subscribe playlist,mixer\n')
@@ -39,7 +37,7 @@ class LMSClient(Protocol):
         if command[0] == config['player_mac'] and command[1] == 'playlist':
             if command[2] == 'play' or (command[2] == 'pause' and command[3] == '0'):
                 log.msg("play command received")
-                #receiver = cec.Device(config['cec_output'])
+                receiver = cec.Device(config['cec_output'])
                 if not receiver.is_on():
                     if receiver.power_on():
                         log.msg("turned receiver on")
@@ -54,11 +52,11 @@ class LMSClient(Protocol):
                 if command[3][0] == '+':
                      log.msg("volume up")
                      self.transport.write(b'%s mixer volume %s\n' % (config['player_mac'], config['default_volume']))
-                     #cec.volume_up()
+                     cec.volume_up()
                 elif command[3][0] == '-':
                      log.msg("volume down")
                      self.transport.write(b'%s mixer volume %s\n' % (config['player_mac'], config['default_volume']))
-                     #cec.volume_down()
+                     cec.volume_down()
 
 
 class LMSClientFactory(ReconnectingClientFactory):
@@ -83,6 +81,8 @@ class Simple(resource.Resource):
 
 if __name__ == '__main__':
     log.startLogging(sys.stdout)
+    cec.init()
+    cec.list_devices()  # necessary for volume to work
     reactor.connectTCP(config['lms_server'], config['lms_port'], LMSClientFactory())
     root = resource.Resource()
     root.putChild("vol_up", Simple())

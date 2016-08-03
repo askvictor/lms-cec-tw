@@ -70,8 +70,7 @@ class LMSClientFactory(ReconnectingClientFactory):
 class Simple(resource.Resource):
     isLeaf = True
     def render_GET(self, request):
-        receiv:w
-        er = cec.Device(config['cec_output'])
+        receiver = cec.Device(config['cec_output'])
         if request.path == "/vol_up":
             cec.volume_up()
         elif request.path == "/vol_down":
